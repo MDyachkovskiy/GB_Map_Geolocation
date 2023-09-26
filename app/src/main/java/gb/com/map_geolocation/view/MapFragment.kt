@@ -1,62 +1,54 @@
-package gb.com.map_geolocation
+package gb.com.map_geolocation.view
 
 import android.Manifest
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.mapview.MapView
-import gb.com.map_geolocation.databinding.ActivityMainBinding
+import gb.com.map_geolocation.databinding.FragmentMapBinding
 
-class MainActivity : AppCompatActivity() {
+class MapFragment : Fragment() {
 
-    private val LOCATION_PERMISSION_REQUEST_CODE = 1
-
-    private val binding by lazy {ActivityMainBinding.inflate(layoutInflater)}
     private lateinit var mapView: MapView
-    override fun onCreate(savedInstanceState: Bundle?) {
-        MapKitFactory.setApiKey("54730c83-7ec0-4ecf-93da-c64ad0b860d6")
-        MapKitFactory.initialize(this)
 
-        super.onCreate(savedInstanceState)
-        setContentView(binding.root)
-        mapView = binding.mapView
+    private var _binding: FragmentMapBinding? = null
+    private val binding get() = _binding!!
 
-        showLocationPermissionDialog()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when(requestCode) {
-            LOCATION_PERMISSION_REQUEST_CODE -> {
-                if(grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
-                ){
-                    initializeMap()
-                } else {
-                    Snackbar.make(binding.root,
-                    "Location permission is required for this features",
-                    Snackbar.LENGTH_LONG
-                    ).show()
-                }
-                return
-            }
+    companion object {
+        fun newInstance(): MapFragment {
+            return MapFragment()
         }
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        MapKitFactory.setApiKey("54730c83-7ec0-4ecf-93da-c64ad0b860d6")
+        MapKitFactory.initialize(requireContext())
+
+        _binding = FragmentMapBinding.inflate(inflater, container, false)
+        mapView = binding.mapView
+
+        showLocationPermissionDialog()
+
+        return binding.root
+    }
+
     private fun showLocationPermissionDialog() {
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(requireContext())
             .setTitle("Select Location Accuracy")
             .setMessage("Do you want precise or coarse location?")
             .setPositiveButton("Precise") {_,_ ->
@@ -69,19 +61,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestLocationPermission(permission: String) {
-        if(ContextCompat.checkSelfPermission(this,permission) !=
+        if(ContextCompat.checkSelfPermission(requireContext(),permission) !=
             PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(permission),
-                LOCATION_PERMISSION_REQUEST_CODE)
+           requestPermissionLauncher
         } else {
             initializeMap()
+        }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if(isGranted) {
+            initializeMap()
+        } else {
+            Snackbar.make(binding.root,
+                "Location permission is required for this features",
+                Snackbar.LENGTH_LONG
+            ).show()
         }
     }
 
     private fun initializeMap() {
         mapView
             .map
-            .move(CameraPosition(Point(55.755864, 37.617698),
+            .move(
+                CameraPosition(
+                    Point(55.755864, 37.617698),
                 11.0f, 0.0f, 0.0f),
                 Animation(Animation.Type.SMOOTH, 10f), null)
     }
@@ -97,4 +102,10 @@ class MainActivity : AppCompatActivity() {
         MapKitFactory.getInstance().onStart()
         super.onStart()
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 }
