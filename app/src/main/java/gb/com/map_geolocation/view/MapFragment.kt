@@ -21,6 +21,7 @@ import gb.com.map_geolocation.databinding.FragmentMapBinding
 class MapFragment : Fragment() {
 
     private lateinit var mapView: MapView
+    private val model: MapViewModel by lazy { MapViewModel() }
 
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
@@ -42,7 +43,15 @@ class MapFragment : Fragment() {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         mapView = binding.mapView
 
-        showLocationPermissionDialog()
+        model.isPermissionGranted.observe(viewLifecycleOwner) { isGranted ->
+            if (isGranted) {
+                initializeMap()
+            } else {
+                showLocationPermissionDialog()
+            }
+        }
+
+        model.checkPermission(requireContext())
 
         return binding.root
     }
