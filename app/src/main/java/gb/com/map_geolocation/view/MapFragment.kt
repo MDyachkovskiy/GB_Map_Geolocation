@@ -11,17 +11,22 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
-import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
+import com.yandex.mapkit.location.Location
+import com.yandex.mapkit.location.LocationListener
+import com.yandex.mapkit.location.LocationStatus
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.mapview.MapView
 import gb.com.map_geolocation.databinding.FragmentMapBinding
+import gb.com.map_geolocation.utils.MapManager
 
 class MapFragment : Fragment() {
 
     private lateinit var mapView: MapView
+    private lateinit var lastKnownLocation: Location
     private val model: MapViewModel by lazy { MapViewModel() }
+    private val mapManager by lazy { MapManager(requireContext()) }
 
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
@@ -37,20 +42,26 @@ class MapFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        MapKitFactory.setApiKey("54730c83-7ec0-4ecf-93da-c64ad0b860d6")
-        MapKitFactory.initialize(requireContext())
-
+        mapManager.initializeMapKit()
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         mapView = binding.mapView
 
         model.isPermissionGranted.observe(viewLifecycleOwner) { isGranted ->
             if (isGranted) {
-                initializeMap()
+                val locationManager = MapKitFactory.getInstance().createLocationManager()
+
+                locationManager.requestSingleUpdate(object : LocationListener{
+                    override fun onLocationUpdated(location: Location) {
+                        initializeMap(location)
+                    }
+
+                    override fun onLocationStatusUpdated(p0: LocationStatus) {
+                    }
+                })
             } else {
                 showLocationPermissionDialog()
             }
         }
-
         model.checkPermission(requireContext())
 
         return binding.root
@@ -74,14 +85,14 @@ class MapFragment : Fragment() {
             PackageManager.PERMISSION_GRANTED) {
            requestPermissionLauncher
         } else {
-            initializeMap()
+            initializeMap(lastKnownLocation)
         }
     }
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if(isGranted) {
-            initializeMap()
+            initializeMap(lastKnownLocation)
         } else {
             Snackbar.make(binding.root,
                 "Location permission is required for this features",
@@ -90,14 +101,15 @@ class MapFragment : Fragment() {
         }
     }
 
-    private fun initializeMap() {
-        mapView
-            .map
-            .move(
-                CameraPosition(
-                    Point(55.755864, 37.617698),
-                11.0f, 0.0f, 0.0f),
-                Animation(Animation.Type.SMOOTH, 10f), null)
+    private fun initializeMap(location: Location?) {
+        if (location != null) {
+            mapView
+                .map
+                .move(CameraPosition(Point(location.position.latitude, location.position.longitude),
+                    150.0f, 0.0f, 0.0f))
+        }
+        var locationOnMap = MapKitFactory.getInstance().createUserLocationLayer(binding.mapView.mapWindow)
+        locationOnMap.isVisible = true
     }
 
     override fun onStop() {
@@ -116,5 +128,4 @@ class MapFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }
