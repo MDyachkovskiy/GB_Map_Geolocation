@@ -7,11 +7,11 @@ import android.location.Location
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.yandex.mapkit.GeoObject
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.GeoObjectTapListener
 import com.yandex.mapkit.map.CameraPosition
-import com.yandex.mapkit.map.GeoObjectSelectionMetadata
 import com.yandex.mapkit.map.InputListener
 import com.yandex.mapkit.map.Map
 import com.yandex.mapkit.map.MapObjectCollection
@@ -37,12 +37,16 @@ class MapManager(
     private var locationLayerAdded = false
     private var isMapInitialized = false
 
+    private lateinit var searchManager: SearchManager
+    private lateinit var searchSession: Session
+    private lateinit var mapObjectCollection: MapObjectCollection
+    private lateinit var placemarkMapObject: PlacemarkMapObject
+
+
     private val tapListener = GeoObjectTapListener { geoObjectTapEvent ->
-        val selectionMetadata: GeoObjectSelectionMetadata = geoObjectTapEvent
-            .geoObject
-            .metadataContainer
-            .getItem(GeoObjectSelectionMetadata::class.java)
-        mapView.map.selectGeoObject(selectionMetadata.id, selectionMetadata.layerId)
+        val geoObject: GeoObject = geoObjectTapEvent.geoObject
+        val objectName = geoObject.name ?: "Название не найдено"
+        Toast.makeText(context, objectName, Toast.LENGTH_SHORT).show()
         false
     }
 
@@ -63,23 +67,17 @@ class MapManager(
         }
     }
 
-    lateinit var searchManager: SearchManager
-    lateinit var searchSession: Session
-
     private val inputListener = object : InputListener {
         override fun onMapTap(map: Map, point: Point) {
             Log.d("@@@", "Tap detected at $point")
-            mapView.map.deselectGeoObject()
+
             searchSession = searchManager.submit(point,20, SearchOptions(), searchListener)
             setMarker(point)
         }
 
-        override fun onMapLongTap(p0: Map, p1: Point) {
+        override fun onMapLongTap(map: Map, point: Point) {
         }
     }
-
-    private lateinit var mapObjectCollection: MapObjectCollection
-    private lateinit var placemarkMapObject: PlacemarkMapObject
 
     fun initializeMap(location: Location?) {
         Log.d("@@@", "Initialize Map with Location: ${location?.latitude}, ${location?.longitude}")
@@ -125,6 +123,10 @@ class MapManager(
     }
 
     private fun setMarker(point: Point) {
+        if(::placemarkMapObject.isInitialized){
+            mapObjectCollection.remove(placemarkMapObject)
+        }
+
         val marker = createBitmapFromVector(R.drawable.ic_location)
         val imageProvider = ImageProvider.fromBitmap(marker)
         mapObjectCollection = mapView.map.mapObjects
