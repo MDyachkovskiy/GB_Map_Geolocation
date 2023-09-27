@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
@@ -27,6 +28,8 @@ class MapFragment : Fragment() {
     private lateinit var mapView: MapView
     private val model: MapViewModel by viewModel()
     private val mapManager by lazy { MapManager(requireContext()) }
+    private var locationLayerAdded = false
+    private var isMapInitialized = false
 
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
@@ -45,6 +48,7 @@ class MapFragment : Fragment() {
         mapManager.initializeMapKit()
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         mapView = binding.mapView
+        initFABs()
 
         model.isPermissionGranted.observe(viewLifecycleOwner) { isGranted ->
             Log.d("@@@", "Permissions Granted: $isGranted")
@@ -74,6 +78,38 @@ class MapFragment : Fragment() {
         model.checkPermission(requireContext())
 
         return binding.root
+    }
+
+    private fun initFABs() {
+        binding.fabLocate.setOnClickListener {
+            model.getLocation()
+        }
+
+        binding.fabZoomIn.setOnClickListener {
+            val cameraPosition = mapView.map.cameraPosition
+            val newZoomLevel = cameraPosition.zoom + 1
+            val newCameraPosition = CameraPosition(
+                cameraPosition.target, newZoomLevel,
+                cameraPosition.azimuth, cameraPosition.tilt
+            )
+            mapView.map.move(
+                newCameraPosition,
+                Animation(Animation.Type.SMOOTH, 1f), null
+            )
+        }
+
+        binding.fabZoomOut.setOnClickListener {
+            val cameraPosition = mapView.map.cameraPosition
+            val newZoomLevel = cameraPosition.zoom - 1
+            val newCameraPosition = CameraPosition(
+                cameraPosition.target, newZoomLevel,
+                cameraPosition.azimuth, cameraPosition.tilt
+            )
+            mapView.map.move(
+                newCameraPosition,
+                Animation(Animation.Type.SMOOTH, 1f), null
+            )
+        }
     }
 
     private fun showLocationPermissionDialog() {
@@ -112,16 +148,25 @@ class MapFragment : Fragment() {
 
     private fun initializeMap(location: Location?) {
         Log.d("@@@", "Initialize Map with Location: ${location?.latitude}, ${location?.longitude}")
-        if (location != null) {
-            mapView
-                .map
-                .move(CameraPosition(Point(location.latitude, location.longitude),
-                    15.0f, 0.0f, 0.0f))
+        val currentZoom: Float = if (isMapInitialized) {
+            mapView.map.cameraPosition.zoom
+        } else {
+            isMapInitialized = true
+            15.0f
         }
-        val locationOnMap = MapKitFactory
-            .getInstance()
-            .createUserLocationLayer(binding.mapView.mapWindow)
-        locationOnMap.isVisible = true
+        location?.let {
+            mapView.map
+                .move(CameraPosition(Point(it.latitude, it.longitude),
+                    currentZoom, 0.0f, 0.0f))
+        }
+
+        if(!locationLayerAdded) {
+            val locationOnMap = MapKitFactory
+                .getInstance()
+                .createUserLocationLayer(binding.mapView.mapWindow)
+            locationOnMap.isVisible = true
+            locationLayerAdded = true
+        }
     }
 
     override fun onStop() {
