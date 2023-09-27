@@ -3,18 +3,24 @@ package gb.com.map_geolocation.view
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import gb.com.map_geolocation.model.LocationRepository
+import gb.com.map_geolocation.model.LocationState
+import kotlinx.coroutines.launch
 
 
-class MapViewModel : ViewModel() {
+class MapViewModel(
+    private val repository: LocationRepository
+) : ViewModel() {
 
-    private val _isPermissionGranted = MutableLiveData<Boolean>(false)
+    private val _locationState = MutableLiveData<LocationState>()
+    val locationState: LiveData<LocationState> = _locationState
+
+    private val _isPermissionGranted = MutableLiveData(false)
     val isPermissionGranted: LiveData<Boolean> get() = _isPermissionGranted
 
     fun checkPermission(context: Context) {
@@ -25,5 +31,11 @@ class MapViewModel : ViewModel() {
                    PackageManager.PERMISSION_GRANTED
     }
 
-
+    fun getLocation() {
+        viewModelScope.launch{
+            repository.requestLocation().collect {state ->
+                _locationState.value = state
+            }
+        }
+    }
 }
