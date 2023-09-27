@@ -1,7 +1,5 @@
 package gb.com.map_geolocation.view
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Location
@@ -11,8 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
@@ -41,6 +37,7 @@ import gb.com.map_geolocation.R
 import gb.com.map_geolocation.databinding.FragmentMapBinding
 import gb.com.map_geolocation.model.LocationState
 import gb.com.map_geolocation.utils.MapManager
+import gb.com.map_geolocation.utils.PermissionHandler
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -49,6 +46,8 @@ class MapFragment : Fragment() {
     private lateinit var mapView: MapView
     private val model: MapViewModel by viewModel()
     private val mapManager by lazy { MapManager(requireContext()) }
+    private lateinit var permissionHandler: PermissionHandler
+
     private var locationLayerAdded = false
     private var isMapInitialized = false
 
@@ -113,7 +112,7 @@ class MapFragment : Fragment() {
         mapManager.initializeMapKit()
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         mapView = binding.mapView
-
+        permissionHandler = PermissionHandler(this, model)
 
         searchManager = SearchFactory.getInstance().createSearchManager(SearchManagerType.ONLINE)
         mapView.map.addInputListener(inputListener)
@@ -121,15 +120,6 @@ class MapFragment : Fragment() {
 
         initFABs()
 
-        model.isPermissionGranted.observe(viewLifecycleOwner) { isGranted ->
-            Log.d("@@@", "Permissions Granted: $isGranted")
-            if (isGranted) {
-                Log.d("@@@", "Requesting location")
-                model.getLocation()
-            } else {
-                showLocationPermissionDialog()
-            }
-        }
         model.locationState.observe(viewLifecycleOwner) { state ->
             Log.d("@@@", "Location State: $state")
             when(state) {
@@ -146,9 +136,19 @@ class MapFragment : Fragment() {
                 else -> {}
             }
         }
-        model.checkPermission(requireContext())
-
+        checkLocationPermission()
         return binding.root
+    }
+
+    private fun checkLocationPermission() {
+        model.checkPermission(requireContext())
+        model.isPermissionGranted.observe(viewLifecycleOwner) {isGranted ->
+            if(isGranted) {
+                model.getLocation()
+            } else {
+                permissionHandler.requestLocationPermission()
+            }
+        }
     }
 
     private fun initFABs() {
@@ -183,40 +183,6 @@ class MapFragment : Fragment() {
         }
     }
 
-    private fun showLocationPermissionDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Select Location Accuracy")
-            .setMessage("Do you want precise or coarse location?")
-            .setPositiveButton("Precise") {_,_ ->
-                requestLocationPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            }
-            .setNegativeButton("Coarse") {_,_ ->
-                requestLocationPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-            }
-            .show()
-    }
-
-    private fun requestLocationPermission(permission: String) {
-        if(ContextCompat.checkSelfPermission(requireContext(),permission) !=
-            PackageManager.PERMISSION_GRANTED) {
-           requestPermissionLauncher.launch(permission)
-        } else {
-            model.getLocation()
-        }
-    }
-
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-        if(isGranted) {
-            model.getLocation()
-        } else {
-            Snackbar.make(binding.root,
-                "Location permission is required for this features",
-                Snackbar.LENGTH_LONG
-            ).show()
-        }
-    }
-
     private fun initializeMap(location: Location?) {
         Log.d("@@@", "Initialize Map with Location: ${location?.latitude}, ${location?.longitude}")
         val currentZoom: Float = if (isMapInitialized) {
@@ -247,9 +213,9 @@ class MapFragment : Fragment() {
     }
 
     override fun onStart() {
+        super.onStart()
         mapView.onStart()
         MapKitFactory.getInstance().onStart()
-        super.onStart()
     }
 
     override fun onDestroyView() {
