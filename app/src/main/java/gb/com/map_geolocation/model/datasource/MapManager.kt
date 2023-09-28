@@ -28,10 +28,12 @@ import com.yandex.mapkit.search.ToponymObjectMetadata
 import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider
 import gb.com.map_geolocation.R
+import gb.com.map_geolocation.view.MapViewModel
 
 class MapManager(
     private val context: Context,
-    private val mapView: MapView
+    private val mapView: MapView,
+    private val model: MapViewModel
     ) {
 
     private var locationLayerAdded = false
@@ -131,5 +133,6 @@ class MapManager(
         val imageProvider = ImageProvider.fromBitmap(marker)
         mapObjectCollection = mapView.map.mapObjects
         placemarkMapObject = mapObjectCollection.addPlacemark(point, imageProvider)
+        model.setCurrentPoint(point)
     }
 }

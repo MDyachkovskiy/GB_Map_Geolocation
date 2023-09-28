@@ -45,8 +45,8 @@ class MapFragment : Fragment() {
 
         mapView = binding.mapView
         permissionHandler = PermissionHandler(this, model)
-        mapManager = MapManager(requireContext(),mapView)
-        fabHandler = FabHandler(binding, mapView, model)
+        mapManager = MapManager(requireContext(),mapView, model)
+        fabHandler = FabHandler(binding, mapView, model, viewLifecycleOwner, requireContext())
 
         initObservers()
         return binding.root

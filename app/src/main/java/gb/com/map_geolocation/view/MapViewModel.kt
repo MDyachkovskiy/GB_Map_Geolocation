@@ -27,6 +27,9 @@ class MapViewModel(
     private val _isPermissionGranted = MutableLiveData(false)
     val isPermissionGranted: LiveData<Boolean> get() = _isPermissionGranted
 
+    private val _currentPoint = MutableLiveData<Point>()
+    val currentPoint: LiveData<Point> get() = _currentPoint
+
     fun checkPermission(context: Context) {
        _isPermissionGranted.value =
            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
@@ -51,5 +54,9 @@ class MapViewModel(
                 name = name
             ))
         }
+    }
+
+    fun setCurrentPoint(point: Point) {
+        _currentPoint.value = point
     }
 }
