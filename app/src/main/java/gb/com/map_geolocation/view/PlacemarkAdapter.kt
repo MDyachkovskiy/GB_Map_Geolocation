@@ -1,5 +1,6 @@
 package gb.com.map_geolocation.view
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -24,13 +25,15 @@ class PlacemarkAdapter(
 
     override fun onBindViewHolder(holder: PlacemarkViewHolder, position: Int) {
         val placemark = placemarks[position]
-        holder.binding.placemarkName.text = placemark.name
-        holder.binding.placemarkAnnotation.text = placemark.annotation
+        Log.d("@@@", "Placemark name: ${placemark.name}, Annotation: ${placemark.annotation}")
+        holder.binding.placemarkName.text = "Проверка текста"
+            //placemark.name
+        holder.binding.placemarkAnnotation.text = "ПРОВЕРКА ТЕКСТА ТЕСТ ТЕСТ ТЕСТОВЫЙ"
+            //placemark.annotation
     }
 
     fun updatePlacemarks(newPlacemarks: List<PlacemarkEntity>) {
         placemarks = newPlacemarks
         notifyDataSetChanged()
     }
-
 }
