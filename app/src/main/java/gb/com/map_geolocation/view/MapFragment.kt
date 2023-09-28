@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.mapview.MapView
@@ -49,7 +50,18 @@ class MapFragment : Fragment() {
         fabHandler = FabHandler(binding, mapView, model, viewLifecycleOwner, requireContext())
 
         initObservers()
+        initPlacemarksList()
         return binding.root
+    }
+
+    private fun initPlacemarksList() {
+        val adapter = PlacemarkAdapter(listOf())
+        binding.placemarksList.layoutManager = LinearLayoutManager(requireContext())
+        binding.placemarksList.adapter = adapter
+
+        model.placemarks.observe(viewLifecycleOwner) {placemarks ->
+            (binding.placemarksList.adapter as PlacemarkAdapter).updatePlacemarks(placemarks)
+        }
     }
 
     private fun initObservers() {

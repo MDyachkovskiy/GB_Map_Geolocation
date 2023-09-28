@@ -2,8 +2,11 @@ package gb.com.map_geolocation.utils
 
 import android.app.AlertDialog
 import android.content.Context
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.LifecycleOwner
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.geometry.Point
@@ -54,6 +57,32 @@ class FabHandler(
                 showAlertDialog()
             }
         }
+
+        with(binding) {
+            drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener{
+                override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                }
+
+                override fun onDrawerOpened(drawerView: View) {
+                    blockingView.visibility = View.VISIBLE
+                }
+
+                override fun onDrawerClosed(drawerView: View) {
+                    blockingView.visibility = View.GONE
+                }
+
+                override fun onDrawerStateChanged(newState: Int) {
+                }
+            })
+
+            fabOpenList.setOnClickListener {
+                if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                } else {
+                    drawerLayout.openDrawer(GravityCompat.START)
+                }
+            }
+        }
     }
 
     private fun adjustZoom(zoom: Int) {
@@ -95,5 +124,4 @@ class FabHandler(
             .setPositiveButton("Ok", null)
             .show()
     }
-
 }
