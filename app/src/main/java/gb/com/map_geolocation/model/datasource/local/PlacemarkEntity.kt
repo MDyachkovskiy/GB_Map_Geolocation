@@ -8,7 +8,7 @@ data class PlacemarkEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val latitude: Double,
-    val longtitude: Double,
+    val longitude: Double,
     val name: String? = null,
     val annotation: String? = null
 )
