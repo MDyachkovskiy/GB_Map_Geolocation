@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.yandex.mapkit.geometry.Point
 import gb.com.map_geolocation.model.repository.LocationRepository
@@ -29,6 +30,8 @@ class MapViewModel(
 
     private val _currentPoint = MutableLiveData<Point>()
     val currentPoint: LiveData<Point> get() = _currentPoint
+
+    val placemarks: LiveData<List<PlacemarkEntity>> = placemarkRepository.getPlacemarks().asLiveData()
 
     fun checkPermission(context: Context) {
        _isPermissionGranted.value =

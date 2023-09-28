@@ -2,6 +2,7 @@ package gb.com.map_geolocation.model.repository
 
 import gb.com.map_geolocation.model.datasource.local.PlacemarkDao
 import gb.com.map_geolocation.model.datasource.local.PlacemarkEntity
+import kotlinx.coroutines.flow.Flow
 
 class PlacemarkRepositoryImpl(
     private val placemarkDao: PlacemarkDao
@@ -10,7 +11,6 @@ class PlacemarkRepositoryImpl(
         placemarkDao.insertPlacemark(placemark)
     }
 
-    override suspend fun getPlacemerks(): List<PlacemarkEntity> {
-        return placemarkDao.getPlacemarks()
-    }
+    override fun getPlacemarks(): Flow<List<PlacemarkEntity>> = placemarkDao.getPlacemarks()
+
 }

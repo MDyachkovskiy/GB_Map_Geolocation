@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlacemarkDao {
@@ -11,5 +12,5 @@ interface PlacemarkDao {
     suspend fun insertPlacemark(placemark: PlacemarkEntity)
 
     @Query("SELECT * FROM placemarks")
-    suspend fun getPlacemarks(): List<PlacemarkEntity>
+    fun getPlacemarks(): Flow<List<PlacemarkEntity>>
 }
