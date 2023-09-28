@@ -26,10 +26,8 @@ class PlacemarkAdapter(
     override fun onBindViewHolder(holder: PlacemarkViewHolder, position: Int) {
         val placemark = placemarks[position]
         Log.d("@@@", "Placemark name: ${placemark.name}, Annotation: ${placemark.annotation}")
-        holder.binding.placemarkName.text = "Проверка текста"
-            //placemark.name
-        holder.binding.placemarkAnnotation.text = "ПРОВЕРКА ТЕКСТА ТЕСТ ТЕСТ ТЕСТОВЫЙ"
-            //placemark.annotation
+        holder.binding.placemarkName.text = placemark.name
+        holder.binding.placemarkAnnotation.text = placemark.annotation
     }
 
     fun updatePlacemarks(newPlacemarks: List<PlacemarkEntity>) {
