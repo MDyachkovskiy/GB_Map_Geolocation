@@ -1,9 +1,10 @@
-package gb.com.map_geolocation.model
+package gb.com.map_geolocation.model.repository
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import com.google.android.gms.location.LocationServices
+import gb.com.map_geolocation.model.LocationState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow

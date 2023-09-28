@@ -2,6 +2,7 @@ package gb.com.map_geolocation.app
 
 import android.app.Application
 import gb.com.map_geolocation.di.appModule
+import gb.com.map_geolocation.di.databaseModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
@@ -11,7 +12,7 @@ class App : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
-            modules(appModule)
+            modules(listOf(appModule, databaseModule))
         }
     }
 }

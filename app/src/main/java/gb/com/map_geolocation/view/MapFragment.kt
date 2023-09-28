@@ -10,7 +10,7 @@ import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.mapview.MapView
 import gb.com.map_geolocation.databinding.FragmentMapBinding
 import gb.com.map_geolocation.model.LocationState
-import gb.com.map_geolocation.model.MapManager
+import gb.com.map_geolocation.model.datasource.MapManager
 import gb.com.map_geolocation.utils.FabHandler
 import gb.com.map_geolocation.utils.PermissionHandler
 import org.koin.androidx.viewmodel.ext.android.viewModel

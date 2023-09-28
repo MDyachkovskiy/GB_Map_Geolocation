@@ -48,6 +48,12 @@ dependencies {
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
+    //room
+    apply plugin: 'kotlin-kapt'
+    implementation 'androidx.room:room-runtime:2.5.2'
+    kapt 'androidx.room:room-compiler:2.5.2'
+    implementation 'androidx.room:room-ktx:2.5.2'
+
     //Lifecycle
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
 

@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import gb.com.map_geolocation.model.LocationRepository
+import gb.com.map_geolocation.model.repository.LocationRepository
 import gb.com.map_geolocation.model.LocationState
 import kotlinx.coroutines.launch
 

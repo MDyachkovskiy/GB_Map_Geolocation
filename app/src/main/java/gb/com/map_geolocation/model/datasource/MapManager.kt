@@ -1,4 +1,4 @@
-package gb.com.map_geolocation.model
+package gb.com.map_geolocation.model.datasource
 
 import android.content.Context
 import android.graphics.Bitmap
