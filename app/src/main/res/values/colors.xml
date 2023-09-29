@@ -2,4 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="fab_color">#66CA6A</color>
+    <color name="delete_btn_color">#CF0E51</color>
 </resources>
