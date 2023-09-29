@@ -70,6 +70,10 @@ class MapFragment : Fragment() {
         adapter.onUpdateClickListener = { placemark ->
             model.updatePlacemark(placemark)
         }
+
+        adapter.onMarkerClickListener = { placemark ->
+            mapManager.moveCameraTo(placemark.latitude, placemark.longitude)
+        }
     }
 
     private fun initObservers() {

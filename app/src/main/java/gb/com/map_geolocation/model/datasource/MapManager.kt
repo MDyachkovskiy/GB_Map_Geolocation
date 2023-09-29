@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
@@ -171,5 +172,14 @@ class MapManager(
             }
         }
         placemark.addTapListener(mapObjectTapListener)
+    }
+
+    fun moveCameraTo(latitude: Double, longitude: Double) {
+        val targetPoint = Point(latitude, longitude)
+        val cameraPosition = mapView.map.cameraPosition
+        mapView.map
+            .move(CameraPosition(targetPoint, cameraPosition.zoom,
+                cameraPosition.azimuth, cameraPosition.tilt),
+            Animation(Animation.Type.SMOOTH, 1.0f), null)
     }
 }

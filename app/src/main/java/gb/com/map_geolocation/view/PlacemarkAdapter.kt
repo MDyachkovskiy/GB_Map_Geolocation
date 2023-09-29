@@ -12,6 +12,7 @@ class PlacemarkAdapter(
 
     var onDeleteClickListener: ((PlacemarkEntity) -> Unit)? = null
     var onUpdateClickListener: ((PlacemarkEntity) -> Unit)? = null
+    var onMarkerClickListener: ((PlacemarkEntity) -> Unit)? = null
 
     inner class PlacemarkViewHolder(
         val binding: ItemPlacemarkBinding
@@ -22,6 +23,14 @@ class PlacemarkAdapter(
                     if (position != RecyclerView.NO_POSITION) {
                         val placemark = placemarks[position]
                         onDeleteClickListener?.invoke(placemark)
+                    }
+                }
+
+                itemView.setOnClickListener {
+                    val position = adapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        val placemark = placemarks[position]
+                        onMarkerClickListener?.invoke(placemark)
                     }
                 }
             }
