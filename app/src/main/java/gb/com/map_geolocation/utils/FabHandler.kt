@@ -2,8 +2,8 @@ package gb.com.map_geolocation.utils
 
 import android.app.AlertDialog
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.EditText
 import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -12,6 +12,7 @@ import com.yandex.mapkit.Animation
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.mapview.MapView
+import gb.com.map_geolocation.databinding.DialogEditPlacemarkBinding
 import gb.com.map_geolocation.databinding.FragmentMapBinding
 import gb.com.map_geolocation.view.MapViewModel
 
@@ -50,8 +51,8 @@ class FabHandler(
 
         binding.fabAddLocation.setOnClickListener {
             currentPoint?.let {
-                showDialogToEnterName { name ->
-                    model.savePlacemark(it, name)
+                showDialogToEnterName { name, annotation ->
+                    model.savePlacemark(it, name, annotation)
                 }
             } ?: run {
                 showAlertDialog()
@@ -98,15 +99,16 @@ class FabHandler(
         )
     }
 
-    private fun showDialogToEnterName(onNameEntered: (String) -> Unit) {
-        val editText = EditText(context)
+    private fun showDialogToEnterName(onNameEntered: (String, String) -> Unit) {
+        val binding = DialogEditPlacemarkBinding.inflate(LayoutInflater.from(context))
         val dialog = AlertDialog.Builder(context)
-            .setTitle("Введите название маркера на карте")
-            .setView(editText)
+            .setTitle("Введите название маркера и комментарий")
+            .setView(binding.root)
             .setPositiveButton("Сохранить") {_,_ ->
-                val name = editText.text.toString()
+                val name = binding.editName.text.toString()
+                val annotation = binding.editAnnotation.text.toString()
                 if(name.isNotBlank()) {
-                    onNameEntered(name)
+                    onNameEntered(name, annotation)
                 } else {
                     Toast.makeText(context, "Название не может быть пустым",
                         Toast.LENGTH_SHORT).show()

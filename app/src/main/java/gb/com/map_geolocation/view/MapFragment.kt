@@ -62,6 +62,10 @@ class MapFragment : Fragment() {
         model.placemarks.observe(viewLifecycleOwner) {placemarks ->
             (binding.placemarksList.adapter as PlacemarkAdapter).updatePlacemarks(placemarks)
         }
+
+        adapter.onDeleteClickListener = { placemark ->
+            model.deletePlacemark(placemark)
+        }
     }
 
     private fun initObservers() {

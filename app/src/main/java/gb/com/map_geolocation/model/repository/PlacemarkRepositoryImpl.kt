@@ -12,5 +12,8 @@ class PlacemarkRepositoryImpl(
     }
 
     override fun getPlacemarks(): Flow<List<PlacemarkEntity>> = placemarkDao.getPlacemarks()
+    override suspend fun deletePlacemark(placemark: PlacemarkEntity) {
+        placemarkDao.deletePlacemark(placemark)
+    }
 
 }

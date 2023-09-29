@@ -49,13 +49,20 @@ class MapViewModel(
         }
     }
 
-    fun savePlacemark(point: Point, name: String? = null) {
+    fun savePlacemark(point: Point, name: String? = null, annotation: String? = null) {
         viewModelScope.launch {
             placemarkRepository.savePlacemark(PlacemarkEntity(
                 latitude = point.latitude,
                 longitude = point.longitude,
-                name = name
+                name = name,
+                annotation = annotation
             ))
+        }
+    }
+
+    fun deletePlacemark(placemark: PlacemarkEntity) {
+        viewModelScope.launch {
+            placemarkRepository.deletePlacemark(placemark)
         }
     }
 
