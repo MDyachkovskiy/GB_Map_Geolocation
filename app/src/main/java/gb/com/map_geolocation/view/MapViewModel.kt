@@ -66,6 +66,12 @@ class MapViewModel(
         }
     }
 
+    fun updatePlacemark(placemark: PlacemarkEntity) {
+        viewModelScope.launch {
+            placemarkRepository.updatePlacemark(placemark)
+        }
+    }
+
     fun setCurrentPoint(point: Point) {
         _currentPoint.value = point
     }

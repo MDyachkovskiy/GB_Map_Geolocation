@@ -9,6 +9,6 @@ data class PlacemarkEntity(
     val id: Int = 0,
     val latitude: Double,
     val longitude: Double,
-    val name: String? = null,
-    val annotation: String? = null
+    var name: String? = null,
+    var annotation: String? = null
 )

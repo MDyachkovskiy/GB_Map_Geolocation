@@ -66,6 +66,10 @@ class MapFragment : Fragment() {
         adapter.onDeleteClickListener = { placemark ->
             model.deletePlacemark(placemark)
         }
+
+        adapter.onUpdateClickListener = { placemark ->
+            model.updatePlacemark(placemark)
+        }
     }
 
     private fun initObservers() {

@@ -16,4 +16,8 @@ class PlacemarkRepositoryImpl(
         placemarkDao.deletePlacemark(placemark)
     }
 
+    override suspend fun updatePlacemark(placemark: PlacemarkEntity) {
+        placemarkDao.updatePlacemark(placemark)
+    }
+
 }

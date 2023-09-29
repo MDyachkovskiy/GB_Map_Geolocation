@@ -8,4 +8,5 @@ interface PlacemarkRepository {
     fun getPlacemarks(): Flow<List<PlacemarkEntity>>
 
     suspend fun deletePlacemark(placemark: PlacemarkEntity)
+    suspend fun updatePlacemark(placemark: PlacemarkEntity)
 }

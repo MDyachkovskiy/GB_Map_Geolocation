@@ -1,6 +1,5 @@
 package gb.com.map_geolocation.view
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +11,7 @@ class PlacemarkAdapter(
 ) : RecyclerView.Adapter<PlacemarkAdapter.PlacemarkViewHolder>() {
 
     var onDeleteClickListener: ((PlacemarkEntity) -> Unit)? = null
+    var onUpdateClickListener: ((PlacemarkEntity) -> Unit)? = null
 
     inner class PlacemarkViewHolder(
         val binding: ItemPlacemarkBinding
@@ -37,9 +37,26 @@ class PlacemarkAdapter(
 
     override fun onBindViewHolder(holder: PlacemarkViewHolder, position: Int) {
         val placemark = placemarks[position]
-        Log.d("@@@", "Placemark name: ${placemark.name}, Annotation: ${placemark.annotation}")
-        holder.binding.placemarkName.text = placemark.name
-        holder.binding.placemarkAnnotation.text = placemark.annotation
+        with(holder.binding) {
+            placemarkName.setText(placemark.name)
+            placemarkAnnotation.setText(placemark.annotation)
+
+            placemarkName.setOnFocusChangeListener { _, hasFocus ->
+                if(!hasFocus) {
+                    val updatedName = placemarkName.text.toString()
+                    placemark.name = updatedName
+                    onUpdateClickListener?.invoke(placemark)
+                }
+            }
+
+            placemarkAnnotation.setOnFocusChangeListener { _, hasFocus ->
+                if(!hasFocus) {
+                    val updatedAnnotation = placemarkAnnotation.text.toString()
+                    placemark.annotation = updatedAnnotation
+                    onUpdateClickListener?.invoke(placemark)
+                }
+            }
+        }
     }
 
     fun updatePlacemarks(newPlacemarks: List<PlacemarkEntity>) {
