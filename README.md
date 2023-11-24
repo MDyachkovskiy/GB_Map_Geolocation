@@ -6,11 +6,12 @@
 
 <h2>Project Screenshots:</h2>
 
-<img src="https://i.ibb.co.com/nfxTWVw/IMG-20230929-130844.jpg" alt="project-screenshot" width="200" height="400/"> <img src="https://i.ibb.co.com/cL35r4j/IMG-20230929-130956.jpg" alt="project-screenshot" width="200" height="400/"> <img src="https://i.ibb.co.com/JxfjyD0/IMG-20230929-131016.jpg" alt="project-screenshot" width="200" height="400/">
+<img src="https://gdurl.com/Y87H" alt="project-screenshot" width="200" height="400/">    <img src="https://gdurl.com/DT_v" alt="project-screenshot" width="200" height="400/"> 
+<img src="https://gdurl.com/Mb-O" alt="project-screenshot" width="200" height="400/">    <img src="https://gdurl.com/V3pn" alt="project-screenshot" width="200" height="400/">
 
-<img src="https://i.ibb.co.com/Ryzh7h5/IMG-20230929-131105.jpg" alt="project-screenshot" width="200" height="400/">
+<h2>Application Demo Video:</h2>
 
-  
+<p>Watch a demo of the application here: <a href="https://gdurl.com/Ycfx" target="_blank">Map Geolocation App Demo Video</a></p>
   
 <h2>💻 Built with</h2>
 
